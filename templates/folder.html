@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ folder }}</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body>
+
+<div class="container">
+
+    <a href="/" class="button">← Back</a>
+
+    <div class="card">
+        <h1>{{ folder }}</h1>
+
+        {% for file in files %}
+            <div class="button">
+                📄 {{ file }}
+            </div>
+        {% endfor %}
+
+    </div>
+
+</div>
+
+</body>
+</html>

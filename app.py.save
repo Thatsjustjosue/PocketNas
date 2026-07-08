@@ -1,0 +1,63 @@
+from flask import Flask, render_template
+import shutil
+import psutil
+import time
+import os
+
+app = Flask(__name__)
+
+STORAGE = "/mnt/storage"
+
+def get_temperature():
+    try:
+        with open("/sys/class/thermal/thermal_zone0/temp", "r") as f:
+            return round(int(f.read()) / 1000, 1)
+    except:
+        return "N/A"
+
+def format_uptime(seconds):
+    days = int(seconds // 86400)
+    hours = int((seconds % 86400) // 3600)
+    minutes = int((seconds % 3600) // 60)
+
+    if days:
+        return f"{days}d {hours}h"
+    elif hours:
+        return f"{hours}h {minutes}m"
+    else:
+        return f"{minutes}m"
+
+@app.route("/")
+def home():
+    total, used, free = shutil.disk_usage(STORAGE)
+
+    storage = {
+        "total": round(total / (1024**3), 1),
+        "used": round(used / (1024**3), 1),
+        "percent": round((used / total) * 100, 1)
+    
+folders = []
+
+for folder in sorted(os.listdir(STORAGE)):
+    if not folder.startswith(".") and os.path.isdir(os.path.join(STORAGE, folder)):
+        folders.append(folder)
+
+    return render_template(
+        "index.html",
+        storage=storage,
+        folders=folders,
+        cpu=psutil.cpu_percent(),
+        temp=get_temperature(),
+        uptime=format_uptime(time.time() - psutil.boot_time())
+    )
+@app.route("/folder/<path:name>")
+def folder(name):
+    path = os.path.join(STORAGE, name)
+
+    if os.path.exists(path):
+        files = os.listdir(path)
+        return "<h1>" + name + "</h1><br>" + "<br>".join(files)
+
+    return "Folder not found"
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Pi NAS</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>🥧 Pi NAS</h1>
+
+        <div class="card">
+            <h2>Storage</h2>
+            <p>{{ storage.used }} GB used of {{ storage.total }} GB</p>
+            <div class="bar">
+                <div class="fill" style="width: {{ storage.percent }}%"></div>
+            </div>
+            <p>{{ storage.percent }}% used</p>
+        </div>
+
+        <div class="card">
+            <h2>Folders</h2>
+
+            {% for folder in folders %}
+<a class="button" href="/folder/{{ folder }}">{{ folder }}</a>
+{% endfor %}
+
+        </div>
+    </div>
+</body>
+</html>
